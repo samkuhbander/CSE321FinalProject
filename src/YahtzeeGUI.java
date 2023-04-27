@@ -32,6 +32,16 @@ public class YahtzeeGUI {
                 game.rollDice();
                 updateDiceDisplay();
                 updateRollCountDisplay();
+
+                // Enable the dice buttons after the first roll
+                for (JButton diceButton : diceButtons) {
+                    diceButton.setEnabled(true);
+                }
+
+                // Disable the "Roll Dice" button if there are no rolls left
+                if (game.getRollCount() >= 3) {
+                    rollButton.setEnabled(false);
+                }
             }
         });
 
@@ -47,6 +57,7 @@ public class YahtzeeGUI {
         for (int i = 0; i < 5; i++) {
             final int index = i;
             diceButtons[i] = new JButton();
+            diceButtons[i].setEnabled(false); // Disable the dice buttons initially
             diceButtons[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -119,7 +130,7 @@ public class YahtzeeGUI {
 
     // Main method to run the Yahtzee GUI
     public static void main(String[] args) {
-    	// Use SwingUtilities.invokeLater to create and show the GUI on the event-dispatching thread
+        // Use SwingUtilities.invokeLater to create and show the GUI on the event-dispatching thread
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 YahtzeeGUI gui = new YahtzeeGUI();
@@ -128,4 +139,3 @@ public class YahtzeeGUI {
         });
     }
 }
-
