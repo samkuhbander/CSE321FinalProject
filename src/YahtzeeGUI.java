@@ -10,9 +10,11 @@ public class YahtzeeGUI {
     private JPanel dicePanel;
     private JPanel scorePanel;
     private JLabel rollCountLabel;
+    private JLabel totalScoreLabel;
     private YahtzeeGame game;
     private JButton[] diceButtons;
     private JButton[] scoreButtons;
+    
 
     public YahtzeeGUI() {
         // Initialize the Yahtzee game
@@ -90,11 +92,15 @@ public class YahtzeeGUI {
             scorePanel.add(scoreButtons[i]);
         }
 
+        // Initialize the label for displaying the total score
+        totalScoreLabel = new JLabel("Total score: 0");
+
         // Add components to the main frame
         frame.add(rollButton, BorderLayout.NORTH);
         frame.add(rollCountLabel, BorderLayout.SOUTH);
         frame.add(dicePanel, BorderLayout.CENTER);
         frame.add(scorePanel, BorderLayout.EAST);
+        frame.add(totalScoreLabel, BorderLayout.WEST);
     }
 
     // Method to update the display of dice and their lock state
@@ -112,6 +118,12 @@ public class YahtzeeGUI {
         rollCountLabel.setText("Rolls left: " + rollsRemaining);
     }
 
+    // Add a new method to update the display of the total score
+    private void updateTotalScoreDisplay() {
+        int totalScore = game.getPlayer().getScoreCard().getTotalScore();
+        totalScoreLabel.setText("Total score: " + totalScore);
+    }
+
     // Method to update the display of available score options and scores
     private void updateScoreDisplay() {
         for (int i = 0; i < 13; i++) {
@@ -121,6 +133,7 @@ public class YahtzeeGUI {
                 scoreButtons[i].setText(scoreType.toString() + ": " + game.getPlayer().getScoreCard().getScore(scoreType));
             }
         }
+        updateTotalScoreDisplay(); // Call the new method here
     }
 
     // Method to make the main frame visible
