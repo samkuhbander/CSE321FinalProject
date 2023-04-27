@@ -93,7 +93,7 @@ public class YahtzeeGUI {
             final ScoreCard.ScoreType scoreType = ScoreCard.ScoreType.values()[i];
             scoreButtons[i] = new JButton(scoreType.toString());
             scoreButtons[i].putClientProperty( "index", i );
-
+            scoreButtons[i].setEnabled(false);
             scoreButtons[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
