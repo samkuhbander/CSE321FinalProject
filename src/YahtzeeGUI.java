@@ -23,6 +23,8 @@ public class YahtzeeGUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
 
+        // array to track what buttons to lock
+        Boolean[] lockScoreButtons = {false, false, false, false, false, false, false, false, false, false, false, false, false};
         // Create the "Roll Dice" button and its action listener
         rollButton = new JButton("Roll Dice");
         rollButton.addActionListener(new ActionListener() {
@@ -32,6 +34,14 @@ public class YahtzeeGUI {
                 game.rollDice();
                 updateDiceDisplay();
                 updateRollCountDisplay();
+                for (int i = 0; i < scoreButtons.length; i++) {
+                    // scoreButtons[i].setEnabled(true);
+                    if (lockScoreButtons[i] == true) {
+
+                    } else {
+                        scoreButtons[i].setEnabled(true);
+                    }
+                }
             }
         });
 
@@ -58,15 +68,19 @@ public class YahtzeeGUI {
             dicePanel.add(diceButtons[i]);
         }
 
+
         // Initialize the panel for displaying scores and set its layout
         scorePanel = new JPanel();
         scorePanel.setLayout(new GridLayout(13, 2));
 
+        // Array to Lock score buttons that have been used that round
         // Initialize the score buttons and their action listeners
         scoreButtons = new JButton[13];
         for (int i = 0; i < 13; i++) {
             final ScoreCard.ScoreType scoreType = ScoreCard.ScoreType.values()[i];
             scoreButtons[i] = new JButton(scoreType.toString());
+            scoreButtons[i].putClientProperty( "index", i );
+
             scoreButtons[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -74,6 +88,13 @@ public class YahtzeeGUI {
                     int score = game.getPlayer().getScoreCard().calculateScore(scoreType, game.getPlayer().getDiceSet());
                     game.applyScore(scoreType, score);
                     updateScoreDisplay();
+                    int index = (Integer)((JButton)e.getSource()).getClientProperty( "index" );
+                    lockScoreButtons[index] = true;
+                    for (int j = 0; j < scoreButtons.length; j++) {
+                        if (index != j) scoreButtons[j].setEnabled(false);
+                        
+                    }
+
                 }
             });
             scorePanel.add(scoreButtons[i]);
