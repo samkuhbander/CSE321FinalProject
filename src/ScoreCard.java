@@ -110,13 +110,14 @@ public class ScoreCard {
     // Helper method to score N of a kind (e.g., three of a kind, four of a kind)
     private int scoreNOfAKind(int n, DiceSet diceSet) {
         int[] counts = diceSet.getDiceCounts();
-        for (int count : counts) {
-            if (count >= n) {
-                return n * (counts.length + 1); // multiply by max face value
+        for (int i = 0; i < counts.length; i++) {
+            if (counts[i] >= n) {
+                return n * (i + 1); // multiply by the face value corresponding to the count
             }
         }
         return 0;
     }
+
 
     // Helper method to score a full house
     private int scoreFullHouse(DiceSet diceSet) {
