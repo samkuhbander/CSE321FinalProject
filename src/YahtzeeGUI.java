@@ -107,6 +107,7 @@ public class YahtzeeGUI {
                         if (index != j) scoreButtons[j].setEnabled(false);
                         
                     }
+                    rollButton.setEnabled(true);
 
                 }
             });
