@@ -46,7 +46,36 @@ public class ScoreCard {
         return scores.get(scoreType);
     }
 
-    // Method to calculate the total score by summing all recorded scores
+    // Method to calculate the bonus for upper section and Yahtzee
+    private int calculateBonus() {
+        int upperSectionSum = 0;
+        int yahtzeeBonus = 0;
+        
+        for (ScoreType scoreType : ScoreType.values()) {
+            if (scoreType == ScoreType.ACES || scoreType == ScoreType.TWOS || scoreType == ScoreType.THREES
+                    || scoreType == ScoreType.FOURS || scoreType == ScoreType.FIVES || scoreType == ScoreType.SIXES) {
+                Integer score = getScore(scoreType);
+                if (score != null) {
+                    upperSectionSum += score;
+                }
+            } else if (scoreType == ScoreType.YAHTZEE && isYahtzeeScored()) {
+                Integer score = getScore(scoreType);
+                if (score != null && score > 50) {
+                    yahtzeeBonus += score - 50;
+                }
+            }
+        }
+
+        int bonus = 0;
+        if (upperSectionSum > 63) {
+            bonus += 35;
+        }
+        bonus += yahtzeeBonus;
+
+        return bonus;
+    }
+
+    // Method to calculate the total score by summing all recorded scores and bonuses
     public int getTotalScore() {
         int total = 0;
         for (Integer score : scores.values()) {
@@ -54,6 +83,7 @@ public class ScoreCard {
                 total += score;
             }
         }
+        total += calculateBonus();
         return total;
     }
 
