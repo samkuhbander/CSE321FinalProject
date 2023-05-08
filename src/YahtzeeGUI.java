@@ -14,7 +14,8 @@ public class YahtzeeGUI {
     private YahtzeeGame game;
     private JButton[] diceButtons;
     private JButton[] scoreButtons;
-    
+    private JButton restartButton;
+    private Font newFont = new Font("Arial", Font.PLAIN, 18);
 
     public YahtzeeGUI() {
         // Initialize the Yahtzee game
@@ -26,7 +27,8 @@ public class YahtzeeGUI {
         frame.setSize(800, 600);
 
         // array to track what buttons to lock
-        Boolean[] lockScoreButtons = {false, false, false, false, false, false, false, false, false, false, false, false, false};
+        Boolean[] lockScoreButtons = { false, false, false, false, false, false, false, false, false, false, false,
+                false, false };
         // Create the "Roll Dice" button and its action listener
         rollButton = new JButton("Roll Dice");
         rollButton.addActionListener(new ActionListener() {
@@ -59,6 +61,7 @@ public class YahtzeeGUI {
 
         // Initialize the label for displaying the remaining rolls
         rollCountLabel = new JLabel("Rolls left: 3");
+        rollCountLabel.setFont(newFont);
 
         // Initialize the panel for displaying dice and set its layout
         dicePanel = new JPanel();
@@ -69,6 +72,7 @@ public class YahtzeeGUI {
         for (int i = 0; i < 5; i++) {
             final int index = i;
             diceButtons[i] = new JButton();
+            diceButtons[i].setFont(newFont);
             diceButtons[i].setEnabled(false); // Disable the dice buttons initially
             diceButtons[i].addActionListener(new ActionListener() {
                 @Override
@@ -81,10 +85,9 @@ public class YahtzeeGUI {
             dicePanel.add(diceButtons[i]);
         }
 
-
         // Initialize the panel for displaying scores and set its layout
         scorePanel = new JPanel();
-        scorePanel.setLayout(new GridLayout(13, 2));
+        scorePanel.setLayout(new GridLayout(15, 2));
 
         // Array to Lock score buttons that have been used that round
         // Initialize the score buttons and their action listeners
@@ -92,20 +95,22 @@ public class YahtzeeGUI {
         for (int i = 0; i < 13; i++) {
             final ScoreCard.ScoreType scoreType = ScoreCard.ScoreType.values()[i];
             scoreButtons[i] = new JButton(scoreType.toString());
-            scoreButtons[i].putClientProperty( "index", i );
+            scoreButtons[i].putClientProperty("index", i);
             scoreButtons[i].setEnabled(false);
             scoreButtons[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     // Calculate score for the selected scoreType and update the display
-                    int score = game.getPlayer().getScoreCard().calculateScore(scoreType, game.getPlayer().getDiceSet());
+                    int score = game.getPlayer().getScoreCard().calculateScore(scoreType,
+                            game.getPlayer().getDiceSet());
                     game.applyScore(scoreType, score);
                     updateScoreDisplay();
-                    int index = (Integer)((JButton)e.getSource()).getClientProperty( "index" );
+                    int index = (Integer) ((JButton) e.getSource()).getClientProperty("index");
                     lockScoreButtons[index] = true;
                     for (int j = 0; j < scoreButtons.length; j++) {
-                        if (index != j) scoreButtons[j].setEnabled(false);
-                        
+                        if (index != j)
+                            scoreButtons[j].setEnabled(false);
+
                     }
                     rollButton.setEnabled(true);
 
@@ -113,6 +118,24 @@ public class YahtzeeGUI {
             });
             scorePanel.add(scoreButtons[i]);
         }
+
+        restartButton = new JButton("Restart");
+        restartButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int response = JOptionPane.showConfirmDialog(null, "Want to play another game?", "Restart",
+                        JOptionPane.YES_NO_OPTION);
+                if (response == JOptionPane.YES_OPTION) {
+                    frame.setVisible(false);
+                    YahtzeeGUI newGame = new YahtzeeGUI();
+                    newGame.show();
+                } else if (response == JOptionPane.NO_OPTION) {
+                    System.exit(0);
+                }
+            }
+
+        });
 
         // Initialize the label for displaying the total score
         totalScoreLabel = new JLabel("Total score: 0");
@@ -123,6 +146,8 @@ public class YahtzeeGUI {
         frame.add(dicePanel, BorderLayout.CENTER);
         frame.add(scorePanel, BorderLayout.EAST);
         frame.add(totalScoreLabel, BorderLayout.WEST);
+        scorePanel.add(totalScoreLabel);
+        scorePanel.add(restartButton);
     }
 
     // Method to update the display of dice and their lock state
@@ -138,6 +163,7 @@ public class YahtzeeGUI {
     private void updateRollCountDisplay() {
         int rollsRemaining = 3 - game.getRollCount();
         rollCountLabel.setText("Rolls left: " + rollsRemaining);
+        rollCountLabel.setFont(newFont);
     }
 
     // Add a new method to update the display of the total score
@@ -152,7 +178,8 @@ public class YahtzeeGUI {
             ScoreCard.ScoreType scoreType = ScoreCard.ScoreType.values()[i];
             if (!game.getPlayer().getScoreCard().isScoreTypeAvailable(scoreType)) {
                 scoreButtons[i].setEnabled(false);
-                scoreButtons[i].setText(scoreType.toString() + ": " + game.getPlayer().getScoreCard().getScore(scoreType));
+                scoreButtons[i]
+                        .setText(scoreType.toString() + ": " + game.getPlayer().getScoreCard().getScore(scoreType));
             }
         }
         updateTotalScoreDisplay(); // Call the new method here
@@ -165,7 +192,8 @@ public class YahtzeeGUI {
 
     // Main method to run the Yahtzee GUI
     public static void main(String[] args) {
-        // Use SwingUtilities.invokeLater to create and show the GUI on the event-dispatching thread
+        // Use SwingUtilities.invokeLater to create and show the GUI on the
+        // event-dispatching thread
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 YahtzeeGUI gui = new YahtzeeGUI();
