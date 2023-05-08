@@ -139,13 +139,11 @@ public class ScoreCard {
 
     // Helper method to score N of a kind (e.g., three of a kind, four of a kind)
     private int scoreNOfAKind(int n, DiceSet diceSet) {
-        int[] counts = diceSet.getDiceCounts();
-        for (int i = 0; i < counts.length; i++) {
-            if (counts[i] >= n) {
-                return n * (i + 1); // multiply by the face value corresponding to the count
-            }
+        int sum = 0;
+        for (Dice die : diceSet.getDice()) {
+            sum += die.getFaceValue();
         }
-        return 0;
+        return sum;
     }
 
 
