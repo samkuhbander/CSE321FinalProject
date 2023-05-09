@@ -125,7 +125,7 @@ public class YahtzeeGUI {
         scoreButtons = new JButton[13];
         for (int i = 0; i < 13; i++) {
             final ScoreCard.ScoreType scoreType = ScoreCard.ScoreType.values()[i];
-            scoreButtons[i] = new JButton(scoreType.toString());
+            scoreButtons[i] = new JButton(scoreType.toString() + ": ");
             scoreButtons[i].putClientProperty("index", i);
             scoreButtons[i].setEnabled(false);
             scoreButtons[i].addActionListener(new ActionListener() {
@@ -171,7 +171,7 @@ public class YahtzeeGUI {
         });
 
         // Initialize the label for displaying the total score
-        totalScoreLabel = new JLabel("Total score: 0");
+        totalScoreLabel = new JLabel("Total score with bonus: 0  ");
         totalScoreLabel.setFont(newFont);
 
         // Add components to the main frame
@@ -205,7 +205,7 @@ public class YahtzeeGUI {
     // Add a new method to update the display of the total score
     private void updateTotalScoreDisplay() {
         int totalScore = game.getPlayer().getScoreCard().getTotalScore();
-        totalScoreLabel.setText("Total score: " + totalScore);
+        totalScoreLabel.setText("Total score with bonus: " + totalScore);
     }
 
     // Method to update the display of available score options and scores
@@ -233,7 +233,6 @@ public class YahtzeeGUI {
 
         updateTotalScoreDisplay();
     }
-
 
     // Method to make the main frame visible
     public void show() {
