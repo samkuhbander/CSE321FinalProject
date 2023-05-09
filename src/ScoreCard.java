@@ -142,12 +142,15 @@ public class ScoreCard {
         int[] counts = diceSet.getDiceCounts();
         for (int i = 0; i < counts.length; i++) {
             if (counts[i] >= n) {
-                return n * (i + 1); // multiply by the face value corresponding to the count
+                int sum = 0;
+                for (Dice die : diceSet.getDice()) {
+                    sum += die.getFaceValue();
+                }
+                return sum;
             }
         }
         return 0;
     }
-
 
     // Helper method to score a full house
     private int scoreFullHouse(DiceSet diceSet) {
