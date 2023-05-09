@@ -14,10 +14,14 @@ public class ScoreCard {
     // Declare a boolean variable to track if a Yahtzee score has been recorded
     private boolean yahtzeeScored;
 
+    // Declare an int variable to track the number of additional Yahtzees scored
+    private int additionalYahtzees;
+
     // Constructor for initializing the ScoreCard
     public ScoreCard() {
         scores = new HashMap<>();
         yahtzeeScored = false;
+        additionalYahtzees = 0;
         // Initialize all score types with null (score not recorded yet)
         for (ScoreType scoreType : ScoreType.values()) {
             scores.put(scoreType, null);
@@ -58,11 +62,6 @@ public class ScoreCard {
                 if (score != null) {
                     upperSectionSum += score;
                 }
-            } else if (scoreType == ScoreType.YAHTZEE && isYahtzeeScored()) {
-                Integer score = getScore(scoreType);
-                if (score != null && score > 50) {
-                    yahtzeeBonus += score - 50;
-                }
             }
         }
 
@@ -70,7 +69,7 @@ public class ScoreCard {
         if (upperSectionSum > 63) {
             bonus += 35;
         }
-        bonus += yahtzeeBonus;
+        bonus += yahtzeeBonus + (additionalYahtzees * 100);
 
         return bonus;
     }
@@ -139,16 +138,23 @@ public class ScoreCard {
 
     // Helper method to score N of a kind (e.g., three of a kind, four of a kind)
     private int scoreNOfAKind(int n, DiceSet diceSet) {
-        int sum = 0;
-        for (Dice die : diceSet.getDice()) {
-            sum += die.getFaceValue();
+        scoreAdditionalYahtzee(diceSet);
+        int[] counts = diceSet.getDiceCounts();
+        for (int i = 0; i < counts.length; i++) {
+            if (counts[i] >= n) {
+                int sum = 0;
+                for (Dice die : diceSet.getDice()) {
+                    sum += die.getFaceValue();
+                }
+                return sum;
+            }
         }
         return sum;
     }
 
-
     // Helper method to score a full house
     private int scoreFullHouse(DiceSet diceSet) {
+        scoreAdditionalYahtzee(diceSet);
         int[] counts = diceSet.getDiceCounts();
         boolean foundThree = false;
         boolean foundTwo = false;
@@ -164,6 +170,7 @@ public class ScoreCard {
 
     // Helper method to score a small straight (sequence of four consecutive numbers)
     private int scoreSmallStraight(DiceSet diceSet) {
+        scoreAdditionalYahtzee(diceSet);
         int[] counts = diceSet.getDiceCounts();
         int consecutiveCount = 0;
         for (int count : counts) {
@@ -181,6 +188,7 @@ public class ScoreCard {
 
     // Helper method to score a large straight (sequence of five consecutive numbers)
     private int scoreLargeStraight(DiceSet diceSet) {
+        scoreAdditionalYahtzee(diceSet);
         int[] counts = diceSet.getDiceCounts();
         int consecutiveCount = 0; 
         for (int count : counts) {
@@ -206,7 +214,19 @@ public class ScoreCard {
         return 0;
     }
 
+    private void scoreAdditionalYahtzee(DiceSet diceSet) {
+        if (yahtzeeScored) {
+            int[] counts = diceSet.getDiceCounts();
+            for (int count : counts) {
+                if (count == 5) {
+                    additionalYahtzees++;
+                }
+            }
+        }
+    }
+
     private int scoreChance(DiceSet diceSet) {
+        scoreAdditionalYahtzee(diceSet);
         int sum = 0;
         for (Dice die : diceSet.getDice()) {
             sum += die.getFaceValue();

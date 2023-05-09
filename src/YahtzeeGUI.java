@@ -16,6 +16,11 @@ public class YahtzeeGUI {
     private JButton[] scoreButtons;
     private JButton restartButton;
     private Font newFont = new Font("Arial", Font.PLAIN, 18);
+    private JLabel upperScoreLabel;
+    private JLabel lowerScoreLabel;
+    private JPanel upperScorePanel;
+    private JPanel lowerScorePanel;
+
 
     public YahtzeeGUI() {
         // Initialize the Yahtzee game
@@ -24,7 +29,7 @@ public class YahtzeeGUI {
         // Create and configure the main frame
         frame = new JFrame("Yahtzee");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(1000, 600);
 
         // array to track what buttons to lock
         Boolean[] lockScoreButtons = { false, false, false, false, false, false, false, false, false, false, false,
@@ -39,7 +44,6 @@ public class YahtzeeGUI {
                 updateDiceDisplay();
                 updateRollCountDisplay();
                 for (int i = 0; i < scoreButtons.length; i++) {
-                    // scoreButtons[i].setEnabled(true);
                     if (lockScoreButtons[i] == true) {
 
                     } else {
@@ -87,14 +91,41 @@ public class YahtzeeGUI {
 
         // Initialize the panel for displaying scores and set its layout
         scorePanel = new JPanel();
-        scorePanel.setLayout(new GridLayout(15, 2));
+        scorePanel.setLayout(new GridLayout(4, 1));
+    
+        // Add labels for the upper and lower score boxes
+        JLabel upperScoreBoxLabel = new JLabel("Upper Score Box");
+        upperScoreBoxLabel.setFont(newFont);
+    
+        JLabel lowerScoreBoxLabel = new JLabel("Lower Score Box");
+        lowerScoreBoxLabel.setFont(newFont);
+    
+        // Initialize labels for the upper and lower box scores
+        upperScoreLabel = new JLabel("Upper Box Score: 0");
+        upperScoreLabel.setFont(newFont);
+    
+        lowerScoreLabel = new JLabel("Lower Box Score: 0");
+        lowerScoreLabel.setFont(newFont);
+    
+        // Initialize and set the layout for the upper and lower score panels
+        upperScorePanel = new JPanel();
+        upperScorePanel.setLayout(new GridLayout(6, 2));
+    
+        lowerScorePanel = new JPanel();
+        lowerScorePanel.setLayout(new GridLayout(7, 2));
+    
+        // Add the upper and lower box score labels to their respective panels
+        upperScorePanel.add(upperScoreBoxLabel);
+        upperScorePanel.add(upperScoreLabel);
+    
+        lowerScorePanel.add(lowerScoreBoxLabel);
+        lowerScorePanel.add(lowerScoreLabel);
 
-        // Array to Lock score buttons that have been used that round
         // Initialize the score buttons and their action listeners
         scoreButtons = new JButton[13];
         for (int i = 0; i < 13; i++) {
             final ScoreCard.ScoreType scoreType = ScoreCard.ScoreType.values()[i];
-            scoreButtons[i] = new JButton(scoreType.toString());
+            scoreButtons[i] = new JButton(scoreType.toString() + ": ");
             scoreButtons[i].putClientProperty("index", i);
             scoreButtons[i].setEnabled(false);
             scoreButtons[i].addActionListener(new ActionListener() {
@@ -113,15 +144,18 @@ public class YahtzeeGUI {
 
                     }
                     rollButton.setEnabled(true);
-
                 }
             });
-            scorePanel.add(scoreButtons[i]);
+
+            if (i < 6) {
+                upperScorePanel.add(scoreButtons[i]);
+            } else {
+                lowerScorePanel.add(scoreButtons[i]);
+            }
         }
 
         restartButton = new JButton("Restart");
         restartButton.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 int response = JOptionPane.showConfirmDialog(null, "Want to play another game?", "Restart",
@@ -134,16 +168,18 @@ public class YahtzeeGUI {
                     System.exit(0);
                 }
             }
-
         });
 
         // Initialize the label for displaying the total score
-        totalScoreLabel = new JLabel("Total score: 0");
+        totalScoreLabel = new JLabel("Total score with bonus: 0  ");
+        totalScoreLabel.setFont(newFont);
 
         // Add components to the main frame
         frame.add(rollButton, BorderLayout.NORTH);
         frame.add(rollCountLabel, BorderLayout.SOUTH);
         frame.add(dicePanel, BorderLayout.CENTER);
+        scorePanel.add(upperScorePanel);
+        scorePanel.add(lowerScorePanel);
         frame.add(scorePanel, BorderLayout.EAST);
         frame.add(totalScoreLabel, BorderLayout.WEST);
         scorePanel.add(totalScoreLabel);
@@ -169,20 +205,33 @@ public class YahtzeeGUI {
     // Add a new method to update the display of the total score
     private void updateTotalScoreDisplay() {
         int totalScore = game.getPlayer().getScoreCard().getTotalScore();
-        totalScoreLabel.setText("Total score: " + totalScore);
+        totalScoreLabel.setText("Total score with bonus: " + totalScore);
     }
 
     // Method to update the display of available score options and scores
     private void updateScoreDisplay() {
+        int upperScore = 0;
+        int lowerScore = 0;
+        
         for (int i = 0; i < 13; i++) {
             ScoreCard.ScoreType scoreType = ScoreCard.ScoreType.values()[i];
             if (!game.getPlayer().getScoreCard().isScoreTypeAvailable(scoreType)) {
                 scoreButtons[i].setEnabled(false);
-                scoreButtons[i]
-                        .setText(scoreType.toString() + ": " + game.getPlayer().getScoreCard().getScore(scoreType));
+                int score = game.getPlayer().getScoreCard().getScore(scoreType);
+                scoreButtons[i].setText(scoreType.toString() + ": " + score);
+
+                if (i < 6) {
+                    upperScore += score;
+                } else {
+                    lowerScore += score;
+                }
             }
         }
-        updateTotalScoreDisplay(); // Call the new method here
+
+        upperScoreLabel.setText("Upper Box Score: " + upperScore);
+        lowerScoreLabel.setText("Lower Box Score: " + lowerScore);
+
+        updateTotalScoreDisplay();
     }
 
     // Method to make the main frame visible
