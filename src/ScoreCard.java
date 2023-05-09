@@ -149,7 +149,7 @@ public class ScoreCard {
                 return sum;
             }
         }
-        return sum;
+        return 0;
     }
 
     // Helper method to score a full house
